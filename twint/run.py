@@ -266,9 +266,12 @@ def Lookup(config):
             logme.debug(__name__+':Twint:Lookup:user_id')
             config.Username = get_event_loop().run_until_complete(get.Username(config.User_id))
     url = f"https://twitter.com/{config.Username}?lang=en"
-    get_event_loop().run_until_complete(get.User(url, config, db.Conn(config.Database)))
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(get.User(url, config, db.Conn(config.Database)))
     if config.Pandas_au:
         storage.panda._autoget("user")
+    loop.close()
 
 def Profile(config):
     logme.debug(__name__+':Profile')
