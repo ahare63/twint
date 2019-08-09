@@ -1,5 +1,5 @@
 import sys, os
-from asyncio import get_event_loop, TimeoutError, ensure_future
+from asyncio import get_event_loop, TimeoutError, ensure_future, new_event_loop, set_event_loop
 from datetime import timedelta, datetime
 
 from . import datelock, feed, get, output, verbose, storage
@@ -266,8 +266,8 @@ def Lookup(config):
             logme.debug(__name__+':Twint:Lookup:user_id')
             config.Username = get_event_loop().run_until_complete(get.Username(config.User_id))
     url = f"https://twitter.com/{config.Username}?lang=en"
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
+    loop = new_event_loop()
+    set_event_loop(loop)
     loop.run_until_complete(get.User(url, config, db.Conn(config.Database)))
     if config.Pandas_au:
         storage.panda._autoget("user")
